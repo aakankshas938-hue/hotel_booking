@@ -1,0 +1,48 @@
+{% extends 'hotel/base.html' %}
+
+{% block content %}
+<div class="hero-section">
+    <div>
+        <h1 class="display-4">Find Your Perfect Stay</h1>
+        <p class="lead">Book hotels with ease and confidence</p>
+        
+        <form action="{% url 'search' %}" method="GET" class="row g-3 justify-content-center">
+            <div class="col-md-3">
+                <input type="text" class="form-control" name="location" placeholder="Destination" required>
+            </div>
+            <div class="col-md-2">
+                <input type="date" class="form-control" name="check_in" required>
+            </div>
+            <div class="col-md-2">
+                <input type="date" class="form-control" name="check_out" required>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Featured Hotels</h2>
+    <div class="row">
+        {% for hotel in hotels %}
+        <div class="col-md-4">
+            <div class="card hotel-card">
+                <img src="{{ hotel.image.url }}" class="card-img-top room-image" alt="{{ hotel.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ hotel.name }}</h5>
+                    <p class="card-text">{{ hotel.location }}</p>
+                    <p class="card-text">{{ hotel.description|truncatewords:20 }}</p>
+                    <a href="{% url 'hotel_detail' hotel.id %}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center">No hotels available at the moment.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

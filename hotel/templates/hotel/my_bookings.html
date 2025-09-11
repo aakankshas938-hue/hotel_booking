@@ -1,0 +1,50 @@
+{% extends 'hotel/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>My Bookings</h2>
+    
+    {% if bookings %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Hotel & Room</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th>Guests</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ booking.room }}</td>
+                    <td>{{ booking.check_in_date }}</td>
+                    <td>{{ booking.check_out_date }}</td>
+                    <td>{{ booking.guests }}</td>
+                    <td>
+                        {% if booking.is_cancelled %}
+                            <span class="badge bg-danger">Cancelled</span>
+                        {% else %}
+                            <span class="badge bg-success">Confirmed</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if not booking.is_cancelled %}
+                        <a href="{% url 'cancel_booking' booking.id %}" class="btn btn-sm btn-warning">Cancel</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        You don't have any bookings yet. <a href="{% url 'home' %}">Book a room now!</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

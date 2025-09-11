@@ -1,0 +1,33 @@
+{% extends 'hotel/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Book Room: {{ room }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_check_in_date" class="form-label">Check-in Date</label>
+                            {{ form.check_in_date }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_check_out_date" class="form-label">Check-out Date</label>
+                            {{ form.check_out_date }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_guests" class="form-label">Number of Guests</label>
+                            {{ form.guests }}
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Confirm Booking</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

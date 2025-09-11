@@ -1,0 +1,37 @@
+{% extends 'hotel/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>{{ hotel.name }}</h1>
+            <p class="text-muted">{{ hotel.location }}</p>
+            <img src="{{ hotel.image.url }}" class="img-fluid rounded" alt="{{ hotel.name }}">
+            <p class="mt-3">{{ hotel.description }}</p>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Available Rooms</h5>
+                </div>
+                <div class="card-body">
+                    {% for room in hotel.room_set.all %}
+                        {% if room.is_available %}
+                        <div class="border-bottom pb-2 mb-2">
+                            <h6>{{ room.room_type.name }}</h6>
+                            <p>Room {{ room.room_number }} | Capacity: {{ room.room_type.capacity }} guests</p>
+                            <p class="fw-bold">${{ room.room_type.price_per_night }} per night</p>
+                            <a href="{% url 'book_room' room.id %}?check_in={{ request.GET.check_in }}&check_out={{ request.GET.check_out }}" 
+                               class="btn btn-sm btn-success">Book Now</a>
+                        </div>
+                        {% endif %}
+                    {% empty %}
+                        <p>No rooms available at this hotel.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
