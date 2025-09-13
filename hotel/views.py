@@ -5,16 +5,12 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib import messages
 from .models import Hotel, Room, Booking
-from .forms import BookingForm
+from .forms import BookingForm, CustomUserCreationForm
 from datetime import datetime
 
 def home(request):
     hotels = Hotel.objects.all()
     return render(request, 'hotel/home.html', {'hotels': hotels})
-
-def hotel_detail(request, hotel_id):
-    hotel = get_object_or_404(Hotel, id=hotel_id)
-    return render(request, 'hotel/hotel_detail.html', {'hotel': hotel})
 
 def search(request):
     location = request.GET.get('location', '')
@@ -34,6 +30,10 @@ def search(request):
     }
     
     return render(request, 'hotel/search.html', context)
+
+def hotel_detail(request, hotel_id):
+    hotel = get_object_or_404(Hotel, id=hotel_id)
+    return render(request, 'hotel/hotel_detail.html', {'hotel': hotel})
 
 @login_required
 def book_room(request, room_id):
@@ -67,9 +67,15 @@ def book_room(request, room_id):
         
         initial_data = {}
         if check_in:
-            initial_data['check_in_date'] = datetime.strptime(check_in, '%Y-%m-%d').date()
+            try:
+                initial_data['check_in_date'] = datetime.strptime(check_in, '%Y-%m-%d').date()
+            except:
+                pass
         if check_out:
-            initial_data['check_out_date'] = datetime.strptime(check_out, '%Y-%m-%d').date()
+            try:
+                initial_data['check_out_date'] = datetime.strptime(check_out, '%Y-%m-%d').date()
+            except:
+                pass
             
         form = BookingForm(initial=initial_data)
     
@@ -94,16 +100,16 @@ def cancel_booking(request, booking_id):
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=password)
+            user = form.save()
             login(request, user)
+            messages.success(request, 'Registration successful!')
             return redirect('home')
+        else:
+            messages.error(request, 'Please correct the errors below.')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'hotel/register.html', {'form': form})
 
 def user_login(request):
@@ -115,7 +121,10 @@ def user_login(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
+                messages.success(request, f'Welcome back, {username}!')
                 return redirect('home')
+        else:
+            messages.error(request, 'Invalid username or password.')
     else:
         form = AuthenticationForm()
     return render(request, 'hotel/login.html', {'form': form})
@@ -123,4 +132,5 @@ def user_login(request):
 @login_required
 def user_logout(request):
     logout(request)
+    messages.success(request, 'You have been logged out successfully.')
     return redirect('home')
