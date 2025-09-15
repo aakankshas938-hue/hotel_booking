@@ -13,7 +13,7 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-your-default-secret-k
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 # Allowed hosts
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
 
 # Application definition
 INSTALLED_APPS = [
@@ -59,15 +59,23 @@ WSGI_APPLICATION = 'hotel_project.wsgi.application'
 
 # Database
 if config('RENDER', default=False, cast=bool):
-    # Use SQLite on Render (so DATABASE_URL is not required)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+    # Try to use DATABASE_URL, fallback to SQLite if not set
+    try:
+        DATABASES = {
+            'default': dj_database_url.config(
+                default=config('DATABASE_URL'),
+                conn_max_age=600
+            )
         }
-    }
+    except:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
 else:
-    # Local development SQLite
+    # Development database (SQLite)
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -106,12 +114,9 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
-# Render-specific production settings
+# Production security settings
 if config('RENDER', default=False, cast=bool):
     DEBUG = False
-    ALLOWED_HOSTS += ['.onrender.com']  # Render domain
-
-    # Security settings
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
