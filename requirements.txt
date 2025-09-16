@@ -1,8 +1,5 @@
-Django==5.2.6
-gunicorn==23.0.0
-whitenoise==6.10.0
-dj-database-url==3.0.1
-python-decouple==3.8
-psycopg2-binary==2.9.10
-Pillow==11.2.1       # if you handle images
-requests==2.32.3     # if you call APIs
+Django>=5.0.6
+gunicorn
+whitenoise
+dj-database-url
+psycopg2-binary
