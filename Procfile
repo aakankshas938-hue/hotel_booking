@@ -1,1 +1,1 @@
-gunicorn hotel_booking_1.wsgi:application
+gunicorn hotel_booking_2.wsgi:application
