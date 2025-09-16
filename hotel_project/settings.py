@@ -1,32 +1,20 @@
 import os
 from pathlib import Path
 import dj_database_url
-from decouple import config
 
-# -----------------------------
-# BASE DIRECTORY
-# -----------------------------
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# -----------------------------
-# SECRET KEY & DEBUG
-# -----------------------------
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-your-default-secret-key')
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ.get('SECRET_KEY', 'your-default-secret-key')
 
-DEBUG = config('DEBUG', default=True, cast=bool)
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
 
-# -----------------------------
-# ALLOWED HOSTS
-# -----------------------------
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+# Add your Render URL here
+ALLOWED_HOSTS = ["hotel-booking-1-hnwb.onrender.com", "localhost", "127.0.0.1"]
 
-# If deploying on Render, add your Render URL
-if config('RENDER', default=False, cast=bool):
-    ALLOWED_HOSTS.append('hotel-booking-1-9mjc.onrender.com')  # Change to your Render URL
-
-# -----------------------------
-# INSTALLED APPS
-# -----------------------------
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -34,15 +22,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'hotel',  # your app
+    # add your apps here
+    'hotel_app',  
 ]
 
-# -----------------------------
-# MIDDLEWARE
-# -----------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # for static files on Render
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # for static files in production
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -51,18 +37,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# -----------------------------
-# ROOT URLCONF
-# -----------------------------
-ROOT_URLCONF = 'hotel_project.urls'
+ROOT_URLCONF = 'hotel_booking_1.urls'
 
-# -----------------------------
-# TEMPLATES
-# -----------------------------
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],  # Add your template dirs if needed
+        'DIRS': [BASE_DIR / 'templates'],  # your templates folder
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -75,79 +55,34 @@ TEMPLATES = [
     },
 ]
 
-# -----------------------------
-# WSGI APPLICATION
-# -----------------------------
-WSGI_APPLICATION = 'hotel_project.wsgi.application'
+WSGI_APPLICATION = 'hotel_booking_1.wsgi.application'
 
-# -----------------------------
-# DATABASE
-# -----------------------------
-if config('RENDER', default=False, cast=bool):
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=config('DATABASE_URL'),
-            conn_max_age=600
-        )
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+# Database
+DATABASES = {
+    'default': dj_database_url.config(
+        default='sqlite:///' + str(BASE_DIR / "db.sqlite3")
+    )
+}
 
-# -----------------------------
-# PASSWORD VALIDATION
-# -----------------------------
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# -----------------------------
-# INTERNATIONALIZATION
-# -----------------------------
+# Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
 
-# -----------------------------
-# STATIC FILES
-# -----------------------------
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # for production
+STATICFILES_DIRS = [BASE_DIR / 'static']  # local static folder
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# -----------------------------
-# MEDIA FILES
-# -----------------------------
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# -----------------------------
-# DEFAULT PRIMARY KEY
-# -----------------------------
+# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# -----------------------------
-# AUTHENTICATION
-# -----------------------------
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'home'
-
-# -----------------------------
-# RENDER PRODUCTION SETTINGS
-# -----------------------------
-if config('RENDER', default=False, cast=bool):
-    DEBUG = False
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
