@@ -1,3 +1,8 @@
-Django>=5.0
-gunicorn
-dj_database_url
+asgiref==3.9.1
+Django==5.2.6
+pillow==11.3.0
+psycopg==3.2.10
+psycopg-binary==3.2.10
+psycopg2-binary==2.9.10
+sqlparse==0.5.3
+tzdata==2025.2
